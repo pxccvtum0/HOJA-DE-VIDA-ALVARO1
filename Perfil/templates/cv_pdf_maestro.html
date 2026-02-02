@@ -108,10 +108,9 @@
                     {{ perfil.email_contacto }} | {{ perfil.telefonofijo }}<br>
                     {{ perfil.direcciondomiciliaria }}
                 </div>
-            </td>
-            <td class="photo-cell">
+         <td width="25%" style="text-align: right;">
                 {% if perfil.fotoperfil %}
-                    <img src="{{ perfil.foto.path }}" class="profile-img">
+                    <img src="{{ perfil.fotoperfil.url }}" class="photo">
                 {% endif %}
             </td>
         </tr>

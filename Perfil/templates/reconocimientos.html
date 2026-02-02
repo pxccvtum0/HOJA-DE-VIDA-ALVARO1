@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reconocimientos{% endblock %}
+
+{% block content %}
+<section class="min-h-screen p-8 md:p-20 lg:ml-8 relative bg-[#050505] overflow-hidden">
+    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-yellow-500/5 blur-[120px] rounded-full pointer-events-none"></div>
+    <div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+
+    <div class="max-w-6xl mx-auto mb-16 relative z-10">
+        <div class="inline-flex items-center gap-3 bg-yellow-500/5 border border-yellow-500/20 px-4 py-2 rounded-full mb-8">
+            <span class="w-2 h-2 bg-yellow-400 rounded-full animate-pulse shadow-[0_0_10px_#eab308]"></span>
+            <span class="text-[10px] font-black uppercase tracking-[0.4em] text-yellow-500/80">Salón de la Fama | Registro de Méritos</span>
+        </div>
+        
+        <h1 class="text-7xl md:text-9xl font-black italic tracking-tighter leading-[0.8] uppercase mb-6">
+            <span class="text-white opacity-20 block text-4xl md:text-5xl not-italic mb-2">LOGROS Y</span>
+            <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-yellow-200 pr-12 pb-4">
+                RECONOCIMIENTOS
+            </span>
+        </h1>
+        <p class="text-slate-500 font-medium max-w-xl uppercase text-[10px] tracking-[0.3em] leading-relaxed border-l-2 border-yellow-500/40 pl-6">
+            {% if perfil %}{{ perfil.nombres }}{% else %}El perfil{% endif %} ha sido condecorado con las siguientes distinciones por su desempeño técnico y académico bajo el protocolo de excelencia.
+        </p>
+    </div>
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 relative z-10">
+        {% for reconocimiento in datos %}
+        {% if reconocimiento.activarparaqueseveaenfront %}
+        <div class="group relative">
+            <div class="absolute inset-0 bg-[#0a0a0a] border border-white/5 rounded-2xl rounded-tr-[4rem] transition-all duration-500 group-hover:border-yellow-500/40 group-hover:bg-yellow-500/[0.02] shadow-2xl"></div>
+            
+            <div class="relative h-full p-8 flex flex-col items-center text-center transition-all duration-500 group-hover:-translate-y-3">
+                
+                <div class="relative mb-8">
+                    <div class="w-24 h-24 bg-yellow-500/5 rounded-[2rem] flex items-center justify-center border border-yellow-500/20 rotate-45 group-hover:rotate-[225deg] group-hover:bg-yellow-500 group-hover:border-transparent transition-all duration-700">
+                        <div class="-rotate-45 group-hover:-rotate-[225deg] transition-all duration-700 group-hover:text-black">
+                            <i data-lucide="medal" size="36" class="stroke-[1.5]"></i>
+                        </div>
+                    </div>
+                    <div class="absolute -top-4 -right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-pulse">
+                        <i data-lucide="zap" size="14" class="text-yellow-600 fill-current"></i>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-8">
+                    <span class="inline-block px-3 py-1 bg-yellow-500/10 text-yellow-500 text-[9px] font-black uppercase tracking-[0.3em] rounded-md italic">
+                        {{ reconocimiento.entidadpatrocinadora }}
+                    </span>
+                    
+                    <h3 class="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tighter leading-none group-hover:text-yellow-400 transition-colors">
+                        {{ reconocimiento.descripcionreconocimiento }}
+                    </h3>
+
+                    <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                        <span class="w-4 h-[1px] bg-slate-800"></span>
+                        {{ reconocimiento.tiporeconocimiento }}
+                        <span class="w-4 h-[1px] bg-slate-800"></span>
+                    </p>
+                </div>
+
+                <p class="text-slate-400 text-xs font-medium leading-relaxed mb-8 italic">
+                    Avalado por: <span class="text-slate-200">{{ reconocimiento.nombrecontactoauspicia }}</span>
+                </p>
+
+                {% if reconocimiento.rutacertificado %}
+                <a href="{{ reconocimiento.rutacertificado.url }}" target="_blank" 
+                   class="mb-8 w-full group/btn relative overflow-hidden flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-widest text-black bg-white py-4 rounded-xl transition-all duration-300 hover:bg-yellow-500 active:scale-95">
+                    <span class="relative z-10">Ver reconocimiento</span>
+                    <i data-lucide="shield-check" size="14" class="relative z-10"></i>
+                </a>
+                {% endif %}
+
+                <div class="mt-auto w-full pt-6 border-t border-white/5 flex justify-between items-end">
+                    <div class="text-left">
+                        <p class="text-[8px] font-black text-slate-600 uppercase tracking-tighter mb-1">Status: Concedido</p>
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="calendar" size="12" class="text-yellow-500/50"></i>
+                            <p class="text-xs font-mono font-black text-slate-300 uppercase">{{ reconocimiento.fechareconocimiento|date:"M Y" }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[9px] font-mono font-bold text-yellow-500/20 group-hover:text-yellow-500/50 transition-colors">
+                            HEX_{{ reconocimiento.idreconocimiento }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% empty %}
+        <div class="col-span-full py-32 text-center border-2 border-dashed border-white/5 rounded-[4rem] bg-white/[0.01]">
+            <i data-lucide="award" size="64" class="mx-auto text-slate-800 mb-6 opacity-20"></i>
+            <p class="text-slate-500 font-black uppercase tracking-[0.5em] text-xs italic">Awaiting_Distinctions_System</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

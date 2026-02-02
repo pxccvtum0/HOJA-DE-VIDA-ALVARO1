@@ -1,0 +1,296 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sorcerer Profile{% endblock %} | Alvaro López</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@100;400;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        :root {
+            --zenitsu-yellow: #FFD700;
+            --zenitsu-white: #FFFFFF;
+            --zenitsu-orange: #f59e0b;
+            --dark-bg: #050505;
+            --nav-bg: rgba(10, 10, 10, 0.75);
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--dark-bg);
+            color: #f8fafc;
+            overflow-x: hidden;
+            margin: 0;
+        }
+
+        /* --- LOADER --- */
+        #loader {
+            position: fixed; inset: 0; width: 100%; height: 100vh;
+            background: #000000; z-index: 9999; display: flex;
+            justify-content: center; align-items: center;
+            transition: opacity 0.8s ease, visibility 0.8s;
+        }
+
+        /* --- ENERGÍA DE FONDO --- */
+        .energy-container {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1500 0%, #050505 100%);
+        }
+
+        .energy-bolt {
+            position: absolute;
+            background: linear-gradient(to bottom, transparent, var(--zenitsu-yellow), transparent);
+            width: 1px; opacity: 0.2;
+            animation: float-slow linear infinite;
+        }
+
+        @keyframes float-slow {
+            0% { transform: translateY(110vh) scaleY(1); opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { transform: translateY(-10vh) scaleY(2); opacity: 0; }
+        }
+
+        /* --- NAVBAR --- */
+        #main-nav {
+            position: fixed; top: 24px; left: 50%; transform: translateX(-50%);
+            width: fit-content; max-width: 95%; z-index: 100;
+            background: var(--nav-bg); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 215, 0, 0.15); border-radius: 100px;
+            padding: 8px 32px; display: flex; align-items: center; gap: 1.5rem;
+        }
+
+        .nav-link {
+            font-size: 0.6rem; font-weight: 700; letter-spacing: 0.1em;
+            text-transform: uppercase; color: #94a3b8; transition: all 0.4s ease;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+
+        .nav-link:hover { color: var(--zenitsu-yellow); }
+
+        /* Botón Administrador (ESTÁTICO) */
+        .admin-btn {
+            padding: 8px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05); color: #64748b;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .admin-btn:hover {
+            background: var(--zenitsu-yellow); color: black;
+        }
+
+        /* --- MODAL ZENITSU --- */
+        .modal-content-zenitsu {
+            background-color: #0b0d14; 
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-card {
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .option-card:hover {
+            transform: translateX(10px);
+            background: rgba(255, 215, 0, 0.05);
+        }
+
+        .option-card:has(input:checked) {
+            border-color: var(--zenitsu-yellow);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+
+        .option-card:has(input:checked)::before {
+            content: '';
+            position: absolute;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            animation: thunder-slide 1.5s infinite;
+        }
+
+        @keyframes thunder-slide {
+            0% { transform: translateX(-100%) skewX(-45deg); }
+            100% { transform: translateX(200%) skewX(-45deg); }
+        }
+
+        .custom-checkbox {
+            appearance: none; width: 20px; height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 6px;
+            background: #1a1d29; cursor: pointer; position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-checkbox:checked {
+            background-color: var(--zenitsu-yellow);
+            border-color: var(--zenitsu-yellow);
+            box-shadow: 0 0 10px var(--zenitsu-yellow);
+        }
+
+        .custom-checkbox:checked::after {
+            content: '⚡';
+            position: absolute; color: black; font-size: 10px;
+            left: 50%; top: 50%; transform: translate(-50%, -50%);
+        }
+
+        .btn-generar {
+            background: linear-gradient(90deg, #f59e0b, #FFD700, #f59e0b);
+            background-size: 200% auto; color: black; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 0.15em;
+            transition: all 0.3s ease; border-radius: 1rem;
+        }
+
+        .btn-generar:hover {
+            background-position: right center; transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="text-center">
+            <div class="relative w-20 h-20 mb-4 mx-auto border-2 border-yellow-500/20 rounded-full flex items-center justify-center">
+                <div class="absolute inset-0 border-t-2 border-yellow-500 rounded-full animate-spin"></div>
+                <i data-lucide="zap" class="text-yellow-500"></i>
+            </div>
+            <div class="text-[9px] tracking-[0.5em] text-yellow-500 font-bold uppercase animate-pulse">雷の呼吸</div>
+        </div>
+    </div>
+
+    <div class="energy-container" id="energy-container"></div>
+
+    <header id="main-nav">
+        <div class="logo-container flex items-center gap-3 pr-5 border-r border-white/10">
+            <a href="{% url 'home' %}" class="w-10 h-10 bg-gradient-to-tr from-yellow-500 to-yellow-200 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                <span class="text-black font-black text-xl italic font-['Outfit']">A</span>
+            </a>
+            <div class="flex flex-col leading-none">
+                <span class="text-[10px] font-black uppercase tracking-tighter text-white">Alvaro</span>
+                <span class="text-[10px] font-medium uppercase tracking-tighter text-yellow-500">López</span>
+            </div>
+        </div>
+        <nav class="flex items-center gap-6">
+            <a href="{% url 'home' %}" class="nav-link"><i data-lucide="zap" size="16"></i><span>Inicio</span></a>
+            <a href="{% url 'experiencia' %}" class="nav-link"><i data-lucide="briefcase" size="16"></i><span>Experiencia</span></a>
+            <a href="{% url 'cursos' %}" class="nav-link"><i data-lucide="book-open" size="16"></i><span>Cursos</span></a>
+            <a href="{% url 'productos_laborales' %}" class="nav-link"><i data-lucide="layers" size="16"></i><span>Laboral</span></a>
+            <a href="{% url 'productos_academicos' %}" class="nav-link"><i data-lucide="graduation-cap" size="16"></i><span>Académico</span></a>
+            <a href="{% url 'reconocimientos' %}" class="nav-link"><i data-lucide="award" size="16"></i><span>Logros</span></a>
+            <a href="{% url 'garage' %}" class="nav-link"><i data-lucide="package" size="16"></i><span>Garage</span></a>
+        </nav>
+
+        <a href="/admin/" target="_blank" class="admin-btn ml-2 border-l border-white/10 pl-4">
+            <i data-lucide="settings" size="18"></i>
+        </a>
+    </header>
+
+    <main class="pt-40 pb-20 container mx-auto px-6">
+        {% block content %}{% endblock %}
+
+        <div class="fixed bottom-10 right-10 z-50">
+            <button onclick="toggleModal(true)" 
+                    class="group flex items-center gap-4 bg-black/40 backdrop-blur-md border border-yellow-500/30 text-white px-8 py-4 rounded-full font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-yellow-500 hover:text-black transition-all duration-500">
+                <i data-lucide="file-text" size="16"></i>
+                Descargar Expediente
+            </button>
+        </div>
+    </main>
+
+    <div id="modalPDF" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-sm" onclick="toggleModal(false)"></div>
+        <div class="relative modal-content-zenitsu w-full max-w-md p-8">
+            <div class="mb-8">
+                <h2 class="text-2xl font-black text-white tracking-tighter uppercase italic">
+                    CONFIGURAR <span class="text-yellow-500 not-italic">EXPEDIENTE</span>
+                </h2>
+                <div class="h-1 w-20 bg-yellow-500 mt-2"></div>
+            </div>
+
+            <div class="space-y-3">
+                <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border border-white/5 cursor-pointer">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">Experiencia Laboral</span>
+                    <input type="checkbox" id="checkExp" checked class="custom-checkbox">
+                </label>
+                
+                <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border border-white/5 cursor-pointer">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">Cursos Realizados</span>
+                    <input type="checkbox" id="checkCursos" checked class="custom-checkbox">
+                </label>
+
+                <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border border-white/5 cursor-pointer">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">Reconocimientos</span>
+                    <input type="checkbox" id="checkRecon" checked class="custom-checkbox">
+                </label>
+
+                <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border border-white/5 cursor-pointer">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">productos academicos</span>
+                    <input type="checkbox" id="checkProy" checked class="custom-checkbox">
+                </label>
+                  <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border border-white/5 cursor-pointer">
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-slate-300">productos laborales</span>
+                    <input type="checkbox" id="checkProyLab" checked class="custom-checkbox">
+                </label>
+
+                <label class="option-card flex items-center justify-between p-4 bg-[#141721] rounded-2xl border-2 border-yellow-500/20 cursor-pointer">
+                    <span class="text-[11px] font-black uppercase tracking-widest text-yellow-500">Venta Garage</span>
+                    <input type="checkbox" id="checkGarage" checked class="custom-checkbox">
+                </label>
+            </div>
+
+            <button onclick="prepararDescarga()" class="w-full mt-8 py-4 btn-generar text-[11px]">
+                Generar Documento PDF
+            </button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.visibility = 'hidden', 800);
+            }, 800);
+        });
+
+        const container = document.getElementById('energy-container');
+        function createBolt() {
+            const bolt = document.createElement('div');
+            bolt.className = 'energy-bolt';
+            bolt.style.height = (Math.random() * 200 + 100) + 'px';
+            bolt.style.left = Math.random() * 100 + 'vw';
+            bolt.style.animationDuration = (Math.random() * 4 + 2) + 's';
+            container.appendChild(bolt);
+            setTimeout(() => bolt.remove(), 6000);
+        }
+        setInterval(createBolt, 400);
+
+        function toggleModal(show) {
+            const modal = document.getElementById('modalPDF');
+            if (show) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+        }
+
+        function prepararDescarga() {
+            const params = new URLSearchParams({
+                exp: document.getElementById('checkExp').checked,
+                cursos: document.getElementById('checkCursos').checked,
+                recon: document.getElementById('checkRecon').checked,
+                proy: document.getElementById('checkProy').checked,
+                garage: document.getElementById('checkGarage').checked,
+            });
+            window.open(`{% url 'exportar_cv' %}?${params.toString()}`, '_blank');
+            toggleModal(false);
+        }
+    </script>
+</body>
+</html>

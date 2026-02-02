@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Garage | Godspeed Arsenal{% endblock %}
+
+{% block content %}
+<section class="min-h-screen p-6 md:p-20 lg:ml-8 relative bg-[#050505] overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-yellow-500/10 blur-[150px] -z-10 animate-pulse"></div>
+    <div class="absolute bottom-0 left-0 w-64 h-64 bg-yellow-500/5 blur-[100px] -z-10"></div>
+
+    <div class="max-w-6xl mx-auto mb-20 relative">
+        <div class="flex items-center gap-2 mb-4 text-yellow-500">
+            <i data-lucide="zap" size="14" class="fill-current"></i>
+            <span class="text-[10px] font-black uppercase tracking-[0.4em]">Godspeed</span>
+        </div>
+        
+        <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase">
+            <span class="text-white opacity-20 block text-4xl md:text-5xl not-italic mb-2">VENTA DE</span>
+            <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-white to-yellow-200 pr-10 pb-2">
+                Garage
+            </span>
+        </h1>
+
+        <div class="flex gap-4 mt-8">
+            <div class="px-4 py-1 border border-yellow-500/30 rounded-full text-[9px] font-mono text-yellow-500/70 bg-yellow-500/5">
+                FECHA: {% now "M d, Y" %}
+            </div>
+            <div class="px-4 py-1 border border-white/10 rounded-full text-[9px] font-mono text-slate-500 uppercase">
+                Artefactos: {{ datos|length }}
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto flex flex-col gap-8 relative">
+        {% for item in datos %}
+        {% if item.activarparaqueseveaenfront %}
+        
+        {# Lógica de detección de estado #}
+        {% if item.estadoproducto|lower == "bueno" %}
+            {% with color="yellow-500" text_color="yellow-400" label="BUENO" %}
+            <div class="group relative">
+                <div class="absolute inset-0 bg-white/[0.02] border border-white/10 rounded-2xl rounded-tr-[5rem] transition-all duration-500 group-hover:border-{{ color }}/40 group-hover:bg-{{ color }}/[0.02]"></div>
+                
+                <div class="relative p-6 md:p-10 flex flex-col md:flex-row items-center gap-10">
+                    
+                    <div class="relative w-full md:w-64 aspect-square shrink-0">
+                        <div class="absolute inset-0 border-2 border-{{ color }}/20 rounded-3xl rotate-3 group-hover:rotate-6 transition-transform"></div>
+                        <div class="absolute inset-0 border-2 border-white/5 rounded-3xl -rotate-3 group-hover:-rotate-0 transition-transform"></div>
+                        
+                        <div class="relative h-full w-full bg-black rounded-3xl overflow-hidden flex items-center justify-center p-6 border border-white/10">
+                            {% if item.foto_producto %}
+                                <img src="{{ item.foto_producto.url }}" alt="{{ item.nombreproducto }}" class="w-full h-full object-contain z-10 group-hover:scale-110 transition-transform duration-700">
+                            {% else %}
+                                <i data-lucide="package" size="48" class="text-slate-800"></i>
+                            {% endif %}
+                            
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-{{ color }}/10 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-[1.5s] ease-in-out"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2 py-0.5 bg-{{ color }} text-black text-[9px] font-black uppercase italic">{{ label }}</span>
+                            <span class="text-[9px] font-mono text-slate-600 uppercase">UID{{ item.idventagarage }}</span>
+                        </div>
+
+                        <h3 class="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter group-hover:text-{{ text_color }} transition-colors">
+                            {{ item.nombreproducto }}
+                        </h3>
+
+                        <p class="text-slate-400 text-sm leading-relaxed max-w-xl font-medium border-l border-{{ color }}/30 pl-6 group-hover:border-{{ color }}/50 transition-colors">
+                            {{ item.descripcion }}
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-6 pt-4">
+                            <div class="flex flex-col">
+                                <span class="text-[8px] font-bold text-slate-600 uppercase">Valor_Transacción</span>
+                                <span class="text-2xl font-mono text-{{ color }} font-black">${{ item.valordelbien }}</span>
+                            </div>
+
+                            <a href='https://wa.me/593998973952{{ perfil.telefono }}?text=Hola+estoy+interesado+en+el+producto+{{ item.nombreproducto }}' 
+                               target="_blank" 
+                               class="inline-flex items-center gap-4 bg-white text-black px-8 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-{{ color }} hover:shadow-[0_0_20px_rgba(255,215,0,0.4)] transition-all active:scale-95 group/btn">
+                                <span>Adquirir Transmisión</span>
+                                <i data-lucide="arrow-right" size="14" class="group-hover/btn:translate-x-2 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+
+        {% else %}
+            {# ESTADO REGULAR O CUALQUIER OTRO #}
+            {% with color="blue-500" text_color="blue-400" label="REGULAR" %}
+            <div class="group relative">
+                <div class="absolute inset-0 bg-white/[0.02] border border-white/10 rounded-2xl rounded-tr-[5rem] transition-all duration-500 group-hover:border-{{ color }}/40 group-hover:bg-{{ color }}/[0.02]"></div>
+                
+                <div class="relative p-6 md:p-10 flex flex-col md:flex-row items-center gap-10">
+                    <div class="relative w-full md:w-64 aspect-square shrink-0">
+                        <div class="absolute inset-0 border-2 border-{{ color }}/20 rounded-3xl rotate-3 group-hover:rotate-6 transition-transform"></div>
+                        <div class="absolute inset-0 border-2 border-white/5 rounded-3xl -rotate-3 group-hover:-rotate-0 transition-transform"></div>
+                        <div class="relative h-full w-full bg-black rounded-3xl overflow-hidden flex items-center justify-center p-6 border border-white/10">
+                            {% if item.foto_producto %}
+                                <img src="{{ item.foto_producto.url }}" alt="{{ item.nombreproducto }}" class="w-full h-full object-contain z-10 group-hover:scale-110 transition-transform duration-700">
+                            {% else %}
+                                <i data-lucide="package" size="48" class="text-slate-800"></i>
+                            {% endif %}
+                            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-{{ color }}/10 to-transparent -translate-y-full group-hover:translate-y-full transition-transform duration-[1.5s] ease-in-out"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2 py-0.5 bg-{{ color }} text-black text-[9px] font-black uppercase italic">{{ label }}</span>
+                            <span class="text-[9px] font-mono text-slate-600 uppercase">UID{{ item.idventagarage }}</span>
+                        </div>
+                        <h3 class="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter group-hover:text-{{ text_color }} transition-colors">
+                            {{ item.nombreproducto }}
+                        </h3>
+                        <p class="text-slate-400 text-sm leading-relaxed max-w-xl font-medium border-l border-{{ color }}/30 pl-6 group-hover:border-{{ color }}/50 transition-colors">
+                            {{ item.descripcion }}
+                        </p>
+                        <div class="flex flex-wrap items-center gap-6 pt-4">
+                            <div class="flex flex-col">
+                                <span class="text-[8px] font-bold text-slate-600 uppercase">Valor_Transacción</span>
+                                <span class="text-2xl font-mono text-{{ color }} font-black">${{ item.valordelbien }}</span>
+                            </div>
+                            <a href='https://wa.me/593980890155{{ perfil.telefono }}?text=Hola+estoy+interesado+en+el+producto+{{ item.nombreproducto }}' 
+                               target="_blank" 
+                               class="inline-flex items-center gap-4 bg-white text-black px-8 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-{{ color }} hover:shadow-[0_0_20px_rgba(249,115,22,0.4)] transition-all active:scale-95 group/btn">
+                                <span>Adquirir Transmisión</span>
+                                <i data-lucide="arrow-right" size="14" class="group-hover/btn:translate-x-2 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+        {% endif %}
+
+        {% endif %}
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+    .tracking-tighter {
+        letter-spacing: -0.05em;
+    }
+</style>
+
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}
